@@ -1,7 +1,12 @@
 //@version=6
+//@description Personalised adaptation of Market Cipher B
+//@author GrandadEvans<john@grandadevans.com>
+// This script is available on GitHub at https://github.com/GrandadEvans/Grandads-cipher_b
+// Script version: 0.01
+
 indicatorShortTitle = "Grandad's Cipher B"
 indicator(
-     title="Grandad's Cipher B with alerts",
+     title="Grandad&#039;s Cipher B with alerts",
      shorttitle=indicatorShortTitle,
      overlay = false
      )
@@ -9,46 +14,46 @@ indicator(
 // Inputs
 int smallDotSize = input.int(
      defval = 3,
-     title = "Dot Size",
-     tooltip = "How large should the dots be",
+     display = display.none,
      group="Dots",
-     display = display.none
+     title = "Dot Size",
+     tooltip = "How large should the dots be"
      )
 
 int largeDotMultiplier = input.int(
      defval=2,
      display=display.none,
-     title="Large Dot Multiplier",
      group="Dots",
+     title="Large Dot Multiplier",
      tooltip = "How much do you want to multiply the size of the dot when multiple conditions are met?"
      )
 
 color redDotColor = input.color(
      defval = color.red,
      display = display.none,
-     title = '"Red" dot color',
-     group = "Dots"
+     group = "Dots",
+     title = '"Red" dot color'
      )
 
 color greenDotColor = input.color(
      defval = color.lime,
      display = display.none,
-     title = '"Green" dot color',
-     group = "Dots"
+     group = "Dots",
+     title = '"Green" dot color'
      )
 
 int channelLength = input.int(
      defval=10,
      display=display.none,
-     title="Channel Length",
-     group = "Momentum"
+     group = "Momentum",
+     title="Channel Length"
      )
 
 int averageLength = input.int(
      defval=21,
      display=display.none,
-     title="Average Length",
-     group = "Momentum"
+     group = "Momentum",
+     title="Average Length"
      )
 
 int obLevel = input.int(
@@ -66,60 +71,79 @@ int osLevel = input.int(
 int mfiObLevel = input.int(
      defval=80,
      display=display.none,
-     title="Over Sold Level",
-     group="MFI"
+     group="MFI",
+     title="Over Sold Level"
      )
 
 color mfiObColor = input.color(
      defval = color.new(color = color.green, transp = 50),
      display = display.none,
-     title = "Over-bought line color",
-     group="MFI"
+     group="MFI",
+     title = "Over-bought line color"
      )
 
 color mfiNegativeColor = input.color(
      defval = color.new(color = color.red, transp = 50),
      display = display.none,
-     title = "Negative value color",
-     group="MFI"
+     group="MFI",
+     title = "Negative value color"
      )
 
 color mfiPositiveColor = input.color(
      defval = color.new(color = color.lime, transp = 50),
      display = display.none,
-     title = "Positive value color",
-     group="MFI"
+     group="MFI",
+     title = "Positive value color"
      )
 
 int mfiOsLevel = input.int(
      defval=20,
      display=display.none,
-     title="Over-sold Level",
-     group="MFI"
+     group="MFI",
+     title="Over-sold Level"
      )
 
 color mfiOsColor = input.color(
      defval = color.new(color = color.green, transp = 50),
      display = display.none,
-     title = "Over-sold line color",
-     group="MFI"
+     group="MFI",
+     title = "Over-sold line color"
      )
 
 color mfiMidColor = input.color(
      defval = color.new(color = color.green, transp = 50),
      display = display.none,
-     title = "Mid-level line color",
-     group="MFI"
+     group="MFI",
+     title = "Mid-level line color"
      )
 
 int mfiLength = input.int(
      defval=14,
      display=display.none,
-     title="MFI Length",
-     minval=1,
+     group="MFI",
      maxval=2000,
-     group="MFI"
+     minval=1,
+     title="MFI Length"
      )
+
+// === 15m HTF Divergence Settings ===
+bool enableHTF15m = input.bool(
+      defval = true,
+      group = "Divergence Detection",
+      title="Enable 15m Divergence"
+      )
+
+color bullColor15m = input.color(
+      defval = color.lime,
+      group = "Divergence Detection",
+      title = "15m Bullish Divergence Color"
+      )
+
+color bearColor15m = input.color(
+      defval = color.orange,
+      group = "Divergence Detection",
+      title = "15m Bearish Divergence Color"
+      )
 
 // MFI
 mfi = ta.mfi(hlc3, mfiLength)
@@ -176,7 +200,11 @@ plot(
 
 
 // Plot the zero line for reference
-hline(0, "Center Line", color=color.gray)
+hline(
+      price = 0,
+      title = "Center Line",
+      color = color.gray
+      )
 
 plot(
      wt1,
@@ -340,30 +368,20 @@ var label paneLabel = na
 message = mfiCentered > 0 ? "🔔 Money flow is good 🔔" : "Money flow is BAD"
 mfiColor = mfiCentered > 0 ? mfiPositiveColor : mfiNegativeColor
 label.delete(paneLabel)
-paneLabel := label.new(
-     x=bar_index,
-     y=-95,                         // Use y=na or a fixed value
-     text=message,
-     xloc=xloc.bar_index,
-     yloc=yloc.price,             // 👈 This makes it go in the indicator pane
-     style=label.style_label_lower_right,
-     textcolor=color.white,
-     size=size.normal,
-     color=mfiColor
-     )
+
 
 // script to detect bull/bear divs
 
 // Input lengths
-n1 = input.int(10, title="Channel Length")
-n2 = input.int(21, title="Average Length")
+// n1 = input.int(10, title="Channel Length")
+// n2 = input.int(21, title="Average Length")
 
 // Calculate momentum wave
 // ap = hlc3 
-// esa = ta.ema(ap, n1)
-// d = ta.ema(math.abs(ap - esa), n1)
+// esa = ta.ema(ap, channelLength)
+// d = ta.ema(math.abs(ap - esa), channelLength)
 // ci = (ap - esa) / (0.015 * d)
-// tci = ta.ema(ci, n2)
+// tci = ta.ema(ci, averageLength)
 // wt1 = tci
 // wt2 = ta.sma(wt1, 4)
 
@@ -420,21 +438,17 @@ if not na(prevPeakValue) and not na(lastPeakValue)
     bearishDiv := lastPeakValue < prevPeakValue and lastPeakPrice > prevPeakPrice
 
 // Plotting the detected troughs and peaks
-plotshape(troughCond, title="Momentum Trough", location=location.bottom, color=color.red, style=shape.triangleup, size=size.small)
-plotshape(peakCond, title="Momentum Peak", location=location.top, color=color.blue, style=shape.triangledown, size=size.small)
+plotshape(troughCond, title="Momentum Trough", location=location.top, color=color.red, style=shape.triangleup, size=size.large)
+plotshape(peakCond, title="Momentum Peak", location=location.bottom, color=color.blue, style=shape.triangledown, size=size.large)
 
 // Plot bullish divergence marker
-plotshape(bullishDiv ? lastTroughPrice : na, title="Bullish Divergence", location=location.bottom, color=color.lime, style=shape.labelup, text="Bull Div")
+plotshape(bullishDiv ? lastTroughPrice : na, title="Bullish Divergence", location=location.top, color=color.lime, style=shape.labelup, text="Bull Div")
 
 // Plot bearish divergence marker
-plotshape(bearishDiv ? lastPeakPrice : na, title="Bearish Divergence", location=location.top, color=color.orange, style=shape.labeldown, text="Bear Div")
+plotshape(bearishDiv ? lastPeakPrice : na, title="Bearish Divergence", location=location.bottom, color=color.orange, style=shape.labeldown, text="Bear Div")
 
 
 // detect divergences
-// === 15m HTF Divergence Settings ===
-enableHTF15m = input.bool(true, title="Enable 15m Divergence")
-bullColor15m = input.color(color.lime, title="15m Bullish Divergence Color")
-bearColor15m = input.color(color.orange, title="15m Bearish Divergence Color")
 
 // === Function to calculate wt2 ===
 getWT2(src, n1, n2) =>
@@ -446,7 +460,7 @@ getWT2(src, n1, n2) =>
     ta.sma(wt1, 4)
 
 // === Fetch wt2 and close from 15m timeframe ===
-[wt2_15m, close_15m] = request.security(syminfo.tickerid, "15", [getWT2(hlc3, n1, n2), close])
+[wt2_15m, close_15m] = request.security(syminfo.tickerid, "15", [getWT2(hlc3, channelLength, averageLength), close])
 
 // === Detect peaks/troughs on 15m (simplified) ===
 var float prevLowWT_15m = na
@@ -479,8 +493,8 @@ bullDiv15m = enableHTF15m and not na(prevLowWT_15m) and lastLowWT_15m > prevLowW
 bearDiv15m = enableHTF15m and not na(prevHighWT_15m) and lastHighWT_15m < prevHighWT_15m and lastHighPrice_15m > prevHighPrice_15m
 
 // === Plot divergence signals from 15m ===
-plotshape(bullDiv15m, title="15m Bullish Divergence", location=location.bottom, color=bullColor15m, style=shape.labelup, text="15m Bull")
-plotshape(bearDiv15m, title="15m Bearish Divergence", location=location.top, color=bearColor15m, style=shape.labeldown, text="15m Bear")
+plotshape(bullDiv15m, title="15m Bullish Divergence", location=location.top, color=bullColor15m, style=shape.labelup, text="15m Bull")
+plotshape(bearDiv15m, title="15m Bearish Divergence", location=location.bottom, color=bearColor15m, style=shape.labeldown, text="15m Bear")
 
 // Plot bullish divergence marker
 plotshape(
@@ -488,10 +502,33 @@ plotshape(
      title="Bullish Divergence",
      location=location.bottom,
      color=color.green,
-     style=shape.labelup,
+     style=shape.triangleup,
      size=size.small,
      text="Bull"
      )
+var bearDivLabel = label.new(
+     x=bar_index,
+     y=na,                         // Use y=na or a fixed value
+     xloc=xloc.bar_index,
+     yloc=yloc.abovebar,             // 👈 This makes it go in the indicator pane
+     style=label.style_triangledown,
+     textcolor=color.white,
+     size=size.tiny,
+     color=mfiColor,
+     force_overlay = true
+     )
+var bullDivLabel = label.new(
+     x=bar_index,
+     y=na,                         // Use y=na or a fixed value
+     xloc=xloc.bar_index,
+     yloc=yloc.abovebar,             // 👈 This makes it go in the indicator pane
+     style=label.style_triangledown,
+     textcolor=color.white,
+     size=size.tiny,
+     color=mfiColor,
+     force_overlay = true
+     )
+var panelLabel = bullishDiv ? bullDivLabel : bearDivLabel
 
 // Plot bearish divergence marker
 plotshape(
@@ -499,7 +536,7 @@ plotshape(
      title="Bearish Divergence",
      location=location.top,
      color=color.red,
-     style=shape.labeldown,
+     style=shape.triangledown,
      size=size.small,
      text="Bear"
      )
